@@ -1,42 +1,45 @@
-from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QWidget, QApplication, QHBoxLayout, QVBoxLayout, QPushButton, QLineEdit)
 import sys
 
-# Екземпляр класу вікна
+# Create the application instance
 app = QApplication(sys.argv)
 
-# Найголовніше вікно
+# Initialize the main window
 window = QWidget()
-window.setWindowTitle('Калькулятор')
+window.setWindowTitle('Calculator')
 window.setStyleSheet('background-color: #282a36; color: #f8f8f2; font-size: 16px')
 
-# Визначення QLineEdit для відображення
+# Define the QLineEdit for display
 line_edit = QLineEdit()
 
-# Виконуємо операцію, коли натиснуто кнопку
+# Perform the operation when a button is clicked
 def on_operation_click(text):
     line_edit.setText(line_edit.text() + ' ' + text + ' ')
 
-# Обчислюємо вираз
+# Calculate the expression
 def on_equals_click():
     try:
         line_edit.setText(str(eval(line_edit.text())))
     except Exception as e:
         line_edit.setText('Error')
 
-# Очищуємо запис
+# Clear the entry
 def clear_entry():
     line_edit.clear()
 
-# Кнопки та їхні відповідні стилі
+# Function for exponentiation
+def on_exponentiation():
+    line_edit.setText(line_edit.text() + ' ^ ')
+
+# Buttons and their respective styles
 button_texts = [
     ('7', '#6272a4'), ('8', '#6272a4'), ('9', '#6272a4'), ('+', '#8be9fd'),
     ('4', '#6272a4'), ('5', '#6272a4'), ('6', '#6272a4'), ('-', '#8be9fd'),
     ('1', '#6272a4'), ('2', '#6272a4'), ('3', '#6272a4'), ('*', '#8be9fd'),
-    ('0', '#6272a4'), ('.', '#6272a4'), ('/', '#8be9fd')
+    ('0', '#6272a4'), ('.', '#6272a4'), ('/', '#8be9fd'), ('^', '#ffb86c')  # Exponentiation button
 ]
 
-# Налаштування стилів кнопок і їх підключення
+# Configure the button styles and connections
 v_layout = QVBoxLayout()
 for i in range(0, len(button_texts), 4):
     h_layout = QHBoxLayout()
@@ -45,13 +48,15 @@ for i in range(0, len(button_texts), 4):
         button.setStyleSheet(f'background-color: {bg_color}; color: #f8f8f2; font-size: 16px;')
         if text in {'+', '-', '*', '/'}:
             button.clicked.connect(lambda _, text=text: on_operation_click(text))
+        elif text == '^':
+            button.clicked.connect(on_exponentiation)  # Connect the exponentiation function
         else:
             button.clicked.connect(lambda _, text=text: line_edit.setText(line_edit.text() + text))
         button.setFixedHeight(50)
         h_layout.addWidget(button)
     v_layout.addLayout(h_layout)
 
-# Створення макету для кнопок Clear і Equals
+# Create a layout for the clear and equals buttons
 buttons_layout = QHBoxLayout()
 button_delete = QPushButton('CE')
 button_delete.setStyleSheet('background-color: #ff5555; color: #f8f8f2; font-size: 16px;')
@@ -62,7 +67,7 @@ button_equals.setStyleSheet('background-color: #50fa7b; color: #f8f8f2; font-siz
 button_equals.clicked.connect(on_equals_click)
 buttons_layout.addWidget(button_equals)
 
-# Установлення макету для головного вікна та відображення його
+# Set the layout for the main window and display it
 main_layout = QVBoxLayout()
 main_layout.addWidget(line_edit)
 main_layout.addLayout(v_layout)
@@ -70,5 +75,5 @@ main_layout.addLayout(buttons_layout)
 window.setLayout(main_layout)
 window.show()
 
-# Входження в основний цикл програми
+# Enter the application's main loop
 sys.exit(app.exec_())
